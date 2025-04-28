@@ -7,14 +7,36 @@ namespace VentasAPP.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly HomeService _usuarioService;
+        public HomeController(ILogger<HomeController> logger , HomeService usuarioService)
         {
             _logger = logger;
+            _usuarioService = usuarioService;
         }
 
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+        {
+            
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+                return View();
+            }
+            bool esValido = await _usuarioService.ValidarUsuarioAsync(loginViewModel);
+            if (esValido)
+            {
+                return RedirectToAction("Index", "Producto");
+            }
+            ModelState.AddModelError(string.Empty, "Correo o clave incorrectos.");
             return View();
         }
 
