@@ -1,0 +1,98 @@
+﻿@model VentasAPP.Models.Usuario
+
+@{
+    ViewData["Title"] = "Registrar nuevo Cliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="login-container">
+    <div class="login-form">
+        <div class="login-header">
+            <h2>@ViewData["Title"]</h2>
+            <p>Crea una nueva cuenta de Cliente</p>
+        </div>
+
+        @using (Html.BeginForm("Create", "Usuario", FormMethod.Post))
+        {
+           
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Nombre, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", placeholder = "Tu nombre" })
+                    @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Apellido, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Apellido, new { @class = "form-control", placeholder = "Tu apellido" })
+                    @Html.ValidationMessageFor(m => m.Apellido, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Correo, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", placeholder = "tu@ejemplo.com" })
+                    @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Clave, new { @class = "control-label" })
+                    <div class="password-field">
+                        @Html.PasswordFor(m => m.Clave, new { @class = "form-control", placeholder = "••••••••" })
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i id="password-icon" class="fa fa-eye-slash"></i>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Clave, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Telefono, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control", placeholder = "Tu teléfono" })
+                    @Html.ValidationMessageFor(m => m.Telefono, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Direccion, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Direccion, new { @class = "form-control", placeholder = "Tu dirección" })
+                    @Html.ValidationMessageFor(m => m.Direccion, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Cedula, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.Cedula, new { @class = "form-control", placeholder = "Tu cédula" })
+                    @Html.ValidationMessageFor(m => m.Cedula, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn-login">Registrar</button>
+                </div>
+
+                <div class="login-link">
+                    ¿Ya tienes una cuenta? <a asp-action="Index" asp-controller="Home">Inicia Sesión</a>
+                </div>
+           
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            var passwordInput = document.getElementById('@Html.IdFor(m => m.Clave)');
+            var passwordIcon = document.getElementById('password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fa fa-eye';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fa fa-eye-slash';
+            }
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

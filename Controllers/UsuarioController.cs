@@ -57,15 +57,19 @@ namespace VentasAPP.Controllers
             return View();
         }
 
-        // POST: Usuario/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Usuario usuario)
         {
+           
+            ModelState.Remove("Rol");
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Establecer el rol por defecto a "Cliente"
+                    usuario.Rol = "Cliente";
                     await _usuarioService.CrearUsuarioAsync(usuario);
                     return RedirectToAction(nameof(Index));
                 }
