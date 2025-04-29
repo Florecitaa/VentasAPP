@@ -7,7 +7,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (User.IsInRole("admin"))
+@if (User.IsInRole("Admin"))
 {
     <p>
         <a asp-action="Create" class="btn btn-success">Crear Nuevo Producto</a>
@@ -77,10 +77,10 @@
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.idproducto">Detalles</a>
-                    @if (User.IsInRole("admin"))
+                    @if (User.IsInRole("Admin"))
                     {
-                     < a asp - action = "Edit" asp - route - id = "@item.idproducto" > Editar </ a > 
-                     < a asp - action = "Delete" asp - route - id = "@item.idproducto" > Eliminar </ a >
+                        <a asp-action="Edit" asp-route-id="@item.idproducto">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.idproducto">Eliminar</a>
                     }
                 </td>
             </tr>
