@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VentasAPP.Models;
+using Microsoft.Extensions.Logging;
+
 
 namespace VentasAPP.Controllers
 {

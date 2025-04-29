@@ -1,8 +1,66 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model VentasAPP.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="login-container">
+    <div class="login-form">
+        <div class="login-header">
+            <h2>@ViewData["Title"]</h2>
+            <p>Bienvenido de nuevo</p>
+        </div>
+
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "form-login" }))
+        {
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Correo, new { @class = "control-label" })
+                @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", placeholder = "tu@ejemplo.com" })
+                @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Clave, new { @class = "control-label" })
+                <div class="password-field">
+                    @Html.PasswordFor(m => m.Clave, new { @class = "form-control", placeholder = "••••••••", id = "passwordInput" })
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i id="password-icon" class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+                @Html.ValidationMessageFor(m => m.Clave, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+            </div>
+
+            <div class="register-link">
+                ¿No tienes una cuenta? <a asp-action="Register" asp-controller="Account">Regístrate</a>
+            </div>
+        }
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            var passwordInput = document.getElementById('passwordInput');
+            var passwordIcon = document.getElementById('password-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fa fa-eye';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fa fa-eye-slash';
+            }
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

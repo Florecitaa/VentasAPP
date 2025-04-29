@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VentasAPP.Models;
 using OfficeOpenXml;
+using Microsoft.Extensions.Logging;
 
 namespace VentasAPP.Controllers
 {

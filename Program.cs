@@ -1,7 +1,14 @@
+using VentasAPP.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient<HomeService>();
+builder.Services.AddHttpClient<ProductoService>();
+builder.Services.AddHttpClient<VentaService>();
+builder.Services.AddHttpClient<DetalleVentaService>();
+builder.Services.AddHttpClient<UsuarioService>();
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+
 using VentasAPP.Models;
 
 namespace VentasAPP.Controllers
@@ -22,14 +23,13 @@ namespace VentasAPP.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            
             if (!ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    Console.WriteLine(error.ErrorMessage);
+                    _logger.LogError($"Error de validación: {error.ErrorMessage}");
                 }
-                return View();
+                return View(loginViewModel); 
             }
             bool esValido = await _usuarioService.ValidarUsuarioAsync(loginViewModel);
             if (esValido)
@@ -37,7 +37,7 @@ namespace VentasAPP.Controllers
                 return RedirectToAction("Index", "Producto");
             }
             ModelState.AddModelError(string.Empty, "Correo o clave incorrectos.");
-            return View();
+            return View(loginViewModel); 
         }
 
         public IActionResult Privacy()
