@@ -61,7 +61,6 @@ namespace VentasAPP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Usuario usuario)
         {
-           
             ModelState.Remove("Rol");
 
             if (ModelState.IsValid)
@@ -71,7 +70,10 @@ namespace VentasAPP.Controllers
                     // Establecer el rol por defecto a "Cliente"
                     usuario.Rol = "Cliente";
                     await _usuarioService.CrearUsuarioAsync(usuario);
-                    return RedirectToAction(nameof(Index));
+
+                    // Redirigir a la lista de productos en lugar de a la lista de usuarios
+                    return RedirectToAction("Index", "Home");
+
                 }
                 catch (Exception ex)
                 {
@@ -82,6 +84,7 @@ namespace VentasAPP.Controllers
             }
             return View(usuario);
         }
+
 
         // GET: Usuario/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -169,6 +172,24 @@ namespace VentasAPP.Controllers
                 return View("Error");
             }
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostUsuario(Usuario usuario)
+        {
+            try
+            {
+                int newUserId = await _usuarioService.CrearUsuarioAsync(usuario);
+               
+                TempData["MensajeExito"] = "Usuario creado exitosamente. Por favor, inicie sesión.";
+                return RedirectToAction("Index", "Home"); 
+            }
+            catch (Exception ex)
+            {
+                
+                ModelState.AddModelError("", "Ocurrió un error al crear el usuario: " + ex.Message);
+                return View(usuario); 
+            }
         }
     }
 }

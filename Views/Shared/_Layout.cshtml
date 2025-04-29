@@ -52,11 +52,11 @@
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <span class="nav-item">Welcome, @User.Identity.Name</span>
+                            <span class="nav-item">Bienvenido, @User.Identity.Name</span>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Producto" asp-action="Index">Products</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Producto" asp-action="Index">Productos</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Usuario" asp-action="Index">Users</a>
