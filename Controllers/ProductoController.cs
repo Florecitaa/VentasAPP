@@ -16,11 +16,43 @@ namespace VentasAPP.Controllers
             _productoService = productoService;
         }
 
-        public async Task<IActionResult> Index()
+
+
+        public async Task<IActionResult> Index(string nombre, decimal? precioMin, decimal? precioMax)
         {
-            var productos = await _productoService.ObtenerTodosLosProductosAsync();
-            return View(productos);
+            try
+            {
+                var productos = await _productoService.ObtenerTodosLosProductosAsync();
+
+                // Guarda los valores para la vista
+                ViewBag.Nombre = nombre;
+                ViewBag.PrecioMin = precioMin;
+                ViewBag.PrecioMax = precioMax;
+
+                // Filtro con LINQ
+                if (!string.IsNullOrWhiteSpace(nombre))
+                {
+                    productos = productos.Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+                }
+                if (precioMin.HasValue)
+                {
+                    productos = productos.Where(p => p.Precio >= precioMin.Value);
+                }
+                if (precioMax.HasValue)
+                {
+                    productos = productos.Where(p => p.Precio <= precioMax.Value);
+                }
+
+                return View(productos.ToList());
+            }
+            catch (Exception ex)
+            {
+                
+                return View("Error");
+            }
         }
+
+
         public async Task<IActionResult> Details(int id)
         {
             var producto = await _productoService.ObtenerProductoPorIdAsync(id);
@@ -85,16 +117,29 @@ namespace VentasAPP.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> ExportToPdf()
+        public async Task<IActionResult> ExportToPdf(string nombre, decimal? precioMin, decimal? precioMax)
         {
             var productos = await _productoService.ObtenerTodosLosProductosAsync();
 
+            if (!string.IsNullOrWhiteSpace(nombre))
+            {
+                productos = productos.Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+            }
+            if (precioMin.HasValue)
+            {
+                productos = productos.Where(p => p.Precio >= precioMin.Value);
+            }
+            if (precioMax.HasValue)
+            {
+                productos = productos.Where(p => p.Precio <= precioMax.Value);
+            }
+
             using (var stream = new MemoryStream())
             {
-                var doc = new iTextSharp.text.Document();
+                var doc = new Document();
                 PdfWriter.GetInstance(doc, stream).CloseStream = false;
                 doc.Open();
-                doc.Add(new Paragraph("Lista de Productos"));
+                doc.Add(new Paragraph("Lista de Productos Filtrados"));
                 doc.Add(new Paragraph(" "));
 
                 var table = new PdfPTable(5);
@@ -103,7 +148,6 @@ namespace VentasAPP.Controllers
                 table.AddCell("Precio");
                 table.AddCell("Categoría");
                 table.AddCell("Stock");
-               
 
                 foreach (var producto in productos)
                 {
@@ -118,24 +162,37 @@ namespace VentasAPP.Controllers
                 doc.Close();
                 stream.Position = 0;
 
-                return File(stream.ToArray(), "application/pdf", "Productos.pdf");
+                return File(stream.ToArray(), "application/pdf", "ProductosFiltrados.pdf");
             }
         }
 
-        public async Task<IActionResult> ExportToExcel()
+
+        public async Task<IActionResult> ExportToExcel(string nombre, decimal? precioMin, decimal? precioMax)
         {
             var productos = await _productoService.ObtenerTodosLosProductosAsync();
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+            {
+                productos = productos.Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+            }
+            if (precioMin.HasValue)
+            {
+                productos = productos.Where(p => p.Precio >= precioMin.Value);
+            }
+            if (precioMax.HasValue)
+            {
+                productos = productos.Where(p => p.Precio <= precioMax.Value);
+            }
 
             using (var package = new ExcelPackage())
             {
                 var worksheet = package.Workbook.Worksheets.Add("Productos");
-                
+
                 worksheet.Cells[1, 1].Value = "Nombre";
                 worksheet.Cells[1, 2].Value = "Descripción";
                 worksheet.Cells[1, 3].Value = "Precio";
                 worksheet.Cells[1, 4].Value = "Categoría";
                 worksheet.Cells[1, 5].Value = "Stock";
-               
 
                 int row = 2;
                 foreach (var producto in productos)
@@ -145,13 +202,13 @@ namespace VentasAPP.Controllers
                     worksheet.Cells[row, 3].Value = producto.Precio;
                     worksheet.Cells[row, 4].Value = producto.TipoProducto;
                     worksheet.Cells[row, 5].Value = producto.Disponible;
-                 
                     row++;
                 }
 
                 var stream = new MemoryStream(package.GetAsByteArray());
-                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Productos.xlsx");
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ProductosFiltrados.xlsx");
             }
         }
+
     }
 }
