@@ -18,14 +18,16 @@ namespace VentasAPP.Controllers
         {
             try
             {
-                var url = $"{_baseUrl}/Usuario/validar?correo={Uri.EscapeDataString(credenciales.Correo)}&clave={Uri.EscapeDataString(credenciales.Clave)}";
+                var url = $"{_baseUrl}/Usuario/login?correo={Uri.EscapeDataString(credenciales.Correo)}&clave={Uri.EscapeDataString(credenciales.Clave)}";
                 var response = await _httpClient.PostAsync(url, null);
+
+            
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var responseBody = await response.Content.ReadAsStringAsync();
                     _logger.LogError($"Error al validar usuario. Status Code: {response.StatusCode}, Body: {responseBody}");
-                    return false; 
+                    return false;
                 }
 
                 return response.IsSuccessStatusCode;
@@ -33,9 +35,10 @@ namespace VentasAPP.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Excepción al validar usuario: {ex.Message}");
-                return false; 
+                return false;
             }
         }
+
 
 
 

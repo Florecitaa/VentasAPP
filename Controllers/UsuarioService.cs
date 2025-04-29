@@ -53,11 +53,14 @@ namespace VentasAPP.Controllers
             return true; 
         }
 
-        public async Task<Usuario> ValidarUsuarioAsync(string correo, string clave)
+        public async Task<Usuario> ValidarUsuarioAsync(string Correo, string Clave)
         {
-            
-            var url = $"{_baseUrl}/Usuario/validar?correo={Uri.EscapeDataString(correo)}&clave={Uri.EscapeDataString(clave)}";
-            var response = await _httpClient.PostAsync(url, null); 
+
+            var url = $"{_baseUrl}/Usuario/validar?correo={Uri.EscapeDataString(Correo)}&clave={Uri.EscapeDataString(Clave)}";
+
+
+            var response = await _httpClient.GetAsync(url);
+
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Usuario>(content);

@@ -1,4 +1,5 @@
 using VentasAPP.Controllers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,14 @@ builder.Services.AddHttpClient<ProductoService>();
 builder.Services.AddHttpClient<VentaService>();
 builder.Services.AddHttpClient<DetalleVentaService>();
 builder.Services.AddHttpClient<UsuarioService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";
+        options.LogoutPath = "/Home/Logout";
+        
+    });
+
 
 var app = builder.Build();
 
@@ -23,6 +32,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
