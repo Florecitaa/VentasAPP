@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VentasAPP.Models;
 using Microsoft.Extensions.Logging;
-
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using Newtonsoft.Json;
+using OfficeOpenXml;
+using Microsoft.Extensions.Logging;
 
 namespace VentasAPP.Controllers
 {
@@ -17,19 +21,34 @@ namespace VentasAPP.Controllers
         }
 
         // GET: Usuario
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string nombre, string rol)
         {
             try
             {
                 var usuarios = await _usuarioService.ObtenerUsuariosAsync();
+
+                if (!string.IsNullOrWhiteSpace(nombre))
+                {
+                    usuarios = usuarios.Where(u => u.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrWhiteSpace(rol))
+                {
+                    usuarios = usuarios.Where(u => u.Rol.Equals(rol, StringComparison.OrdinalIgnoreCase));
+                }
+
+                ViewBag.Nombre = nombre;
+                ViewBag.Rol = rol;
+
                 return View(usuarios);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la lista de usuarios.");
-                return View("Error"); 
+                return View("Error");
             }
         }
+
 
         // GET: Usuario/Details/5
         public async Task<IActionResult> Details(int id)
@@ -191,6 +210,76 @@ namespace VentasAPP.Controllers
                 return View(usuario); 
             }
         }
+
+        public async Task<IActionResult> ExportToExcel(string nombre, string rol)
+        {
+            var usuarios = await _usuarioService.ObtenerUsuariosAsync();
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+                usuarios = usuarios.Where(u => u.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrWhiteSpace(rol))
+                usuarios = usuarios.Where(u => u.Rol.Equals(rol, StringComparison.OrdinalIgnoreCase));
+
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Usuarios");
+
+            worksheet.Cells[1, 1].Value = "Nombre";
+            worksheet.Cells[1, 2].Value = "Apellido";
+            worksheet.Cells[1, 3].Value = "Correo";
+            worksheet.Cells[1, 4].Value = "Rol";
+
+            int row = 2;
+            foreach (var u in usuarios)
+            {
+                worksheet.Cells[row, 1].Value = u.Nombre;
+                worksheet.Cells[row, 2].Value = u.Apellido;
+                worksheet.Cells[row, 3].Value = u.Correo;
+                worksheet.Cells[row, 4].Value = u.Rol;
+                row++;
+            }
+
+            var stream = new MemoryStream(package.GetAsByteArray());
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Usuarios.xlsx");
+        }
+
+
+        public async Task<IActionResult> ExportToPdf(string nombre, string rol)
+        {
+            var usuarios = await _usuarioService.ObtenerUsuariosAsync();
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+                usuarios = usuarios.Where(u => u.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrWhiteSpace(rol))
+                usuarios = usuarios.Where(u => u.Rol.Equals(rol, StringComparison.OrdinalIgnoreCase));
+
+            using var stream = new MemoryStream();
+            var doc = new Document();
+            PdfWriter.GetInstance(doc, stream).CloseStream = false;
+            doc.Open();
+
+            var table = new PdfPTable(4); 
+            table.AddCell("Nombre");
+            table.AddCell("Apellido");
+            table.AddCell("Correo");
+            table.AddCell("Rol");
+
+            foreach (var u in usuarios)
+            {
+                table.AddCell(u.Nombre);
+                table.AddCell(u.Apellido);
+                table.AddCell(u.Correo);
+                table.AddCell(u.Rol);
+            }
+
+            doc.Add(table);
+            doc.Close();
+
+            stream.Position = 0;
+            return File(stream.ToArray(), "application/pdf", "Usuarios.pdf");
+        }
+
     }
 }
 

@@ -24,7 +24,7 @@ namespace VentasAPP.Controllers
             {
                 var productos = await _productoService.ObtenerTodosLosProductosAsync();
 
-                // Guarda los valores para la vista
+                
                 ViewBag.Nombre = nombre;
                 ViewBag.PrecioMin = precioMin;
                 ViewBag.PrecioMax = precioMax;
