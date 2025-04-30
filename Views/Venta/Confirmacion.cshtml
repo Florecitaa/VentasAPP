@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewData["Title"] = "Pedido Confirmado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="alert alert-success mt-5 text-center">
+    <h2>¡Tu pedido ha sido confirmado!</h2>
+    <p>Te estaremos contactando. Revisa tu correo electrónico para recibir la factura y los detalles de envío.</p>
+    <a asp-controller="Producto" asp-action="Index" class="btn btn-primary mt-3">
+        Seguir comprando
+    </a>
+</div>

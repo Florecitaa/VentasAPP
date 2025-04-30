@@ -9,14 +9,6 @@
 
 <form asp-action="Index" method="get" class="row gy-2 gx-3 align-items-end mb-4">
     <div class="col-auto">
-        <label class="form-label">Fecha desde</label>
-        <input type="date" name="fechaDesde" class="form-control" value="@(ViewBag.FechaDesde ?? "")" />
-    </div>
-    <div class="col-auto">
-        <label class="form-label">Fecha hasta</label>
-        <input type="date" name="fechaHasta" class="form-control" value="@(ViewBag.FechaHasta ?? "")" />
-    </div>
-    <div class="col-auto">
         <label class="form-label">Total mínimo</label>
         <input type="number" step="0.01" name="totalMin" class="form-control" value="@(ViewBag.TotalMin ?? "")" />
     </div>
@@ -37,8 +29,6 @@
 <table class="table table-striped">
     <thead class="table-light">
         <tr>
-            <th>@Html.DisplayNameFor(m => m.First().IDVenta)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Fecha)</th>
             <th>@Html.DisplayNameFor(m => m.First().monto_total)</th>
             <th>@Html.DisplayNameFor(m => m.First().IdUsuario)</th>
             <th>Método Pago</th>
@@ -49,24 +39,21 @@
         @foreach (var v in Model)
         {
             <tr>
-                <td>@v.IDVenta</td>
-                <td>@v.Fecha.ToString("yyyy-MM-dd HH:mm")</td>
                 <td>@v.monto_total.ToString("C")</td>
                 <td>@v.IdUsuario</td>
                 <td>@v.metodo_pago</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@v.IDVenta" class="btn btn-sm btn-info">Detalles</a>
+                    @* <a asp-action="Details" asp-route-id="@v.IDVenta" class="btn btn-sm btn-info">Detalles</a>
                     <a asp-action="Edit" asp-route-id="@v.IDVenta" class="btn btn-sm btn-warning ms-1">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@v.IDVenta" class="btn btn-sm btn-danger ms-1">Eliminar</a>
+                    <a asp-action="Delete" asp-route-id="@v.IDVenta" class="btn btn-sm btn-danger  ms-1">Eliminar</a> *@
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
 <div class="mt-3">
     <a asp-action="ExportToPdf"
-       asp-route-fechaDesde="@(ViewBag.FechaDesde)"
-       asp-route-fechaHasta="@(ViewBag.FechaHasta)"
        asp-route-totalMin="@(ViewBag.TotalMin)"
        asp-route-totalMax="@(ViewBag.TotalMax)"
        asp-route-userId="@(ViewBag.UserId)"
@@ -74,8 +61,6 @@
         Exportar a PDF
     </a>
     <a asp-action="ExportToExcel"
-       asp-route-fechaDesde="@(ViewBag.FechaDesde)"
-       asp-route-fechaHasta="@(ViewBag.FechaHasta)"
        asp-route-totalMin="@(ViewBag.TotalMin)"
        asp-route-totalMax="@(ViewBag.TotalMax)"
        asp-route-userId="@(ViewBag.UserId)"
