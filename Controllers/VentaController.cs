@@ -14,6 +14,8 @@ namespace VentasAPP.Controllers
         private readonly VentaService _ventaService;
         private readonly ProductoService _productoService;
         private readonly ILogger<VentaController> _logger;
+
+        // dependencias de servicios y logger
         public VentaController(VentaService ventaService, ProductoService productoService,ILogger<VentaController> logger)
         {
             _ventaService = ventaService;
@@ -21,12 +23,13 @@ namespace VentasAPP.Controllers
             _productoService = productoService;
         }
 
+        //  Muestra lista de ventas(solo al Admin)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(DateTime? fechaDesde,DateTime? fechaHasta,decimal? totalMin,decimal? totalMax, int? userId)
         {
             try
             {
-                
+                // Obtiene todas las ventas desde el servicio
                 var ventas = await _ventaService.ObtenerTodasLasVentasAsync();
 
                 
@@ -199,6 +202,8 @@ namespace VentasAPP.Controllers
             }
         }
 
+
+        //Confirma la compra, crea registro y actualiza inventario
         [HttpPost]
         
         public async Task<IActionResult> ConfirmarCompra()
@@ -256,6 +261,7 @@ namespace VentasAPP.Controllers
             return View();
         }
 
+        ////Genera reporte PDF de ventas filtradas
         [HttpGet]
         public async Task<IActionResult> ExportToPdf(
         DateTime? fechaDesde,
@@ -264,7 +270,7 @@ namespace VentasAPP.Controllers
         decimal? totalMax,
         int? userId)
         {
-            // Obtén y filtra igual que en Index
+            
             var ventas = await _ventaService.ObtenerTodasLasVentasAsync();
             if (fechaDesde.HasValue) ventas = ventas.Where(v => v.Fecha.Date >= fechaDesde.Value.Date);
             if (fechaHasta.HasValue) ventas = ventas.Where(v => v.Fecha.Date <= fechaHasta.Value.Date);
@@ -298,7 +304,7 @@ namespace VentasAPP.Controllers
             stream.Position = 0;
             return File(stream.ToArray(), "application/pdf", "VentasFiltradas.pdf");
         }
-
+        //// Genera reporte Excel de ventas filtradas
         [HttpGet]
         public async Task<IActionResult> ExportToExcel(
             DateTime? fechaDesde,

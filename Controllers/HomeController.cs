@@ -13,20 +13,23 @@ namespace VentasAPP.Controllers
         private readonly ILogger<HomeController> _logger;
        
         private readonly UsuarioService _usuarioService;
+        // El controlador recibe  el logger y el servicio de usuarios
         public HomeController(ILogger<HomeController> logger , UsuarioService usuarioService)
         {
             _logger = logger;
             _usuarioService = usuarioService;
         }
-
+        // Muestra la página de inicio (login)
         public IActionResult Index()
         {
             return View();
         }
 
+        // Aqui se procesa el login del usuario
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
+            // Valida credenciales de la API de usuarios
             var usuario = await _usuarioService.ValidarUsuarioAsync(loginViewModel.Correo, loginViewModel.Clave);
             if (usuario != null)
             {
@@ -44,9 +47,11 @@ namespace VentasAPP.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
                 return RedirectToAction("Index", "Producto");
+                // Redirige a la lista de productos tras login exitoso
             }
 
             // Usuario no válido
+            // agrega mensaje de error
             ModelState.AddModelError(string.Empty, "Correo o clave incorrectos.");
             return View(loginViewModel); 
         }
@@ -55,6 +60,8 @@ namespace VentasAPP.Controllers
         {
             return View();
         }
+
+        // Cierra la sesión del usuario
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

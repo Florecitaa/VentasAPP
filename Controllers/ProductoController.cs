@@ -11,9 +11,11 @@ namespace VentasAPP.Controllers
     public class ProductoController : Controller
     {
         private readonly ProductoService _productoService;
-        public ProductoController(ProductoService productoService)
+        private readonly ILogger<ProductoController> _logger;
+        public ProductoController(ProductoService productoService, ILogger<ProductoController> logger)
         {
             _productoService = productoService;
+            _logger = logger;
         }
 
 
@@ -55,12 +57,17 @@ namespace VentasAPP.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var producto = await _productoService.ObtenerProductoPorIdAsync(id);
-            if (producto == null)
+            try
             {
-                return NotFound();
+                var producto = await _productoService.ObtenerProductoPorIdAsync(id);
+                if (producto == null) return NotFound();
+                return View(producto);
             }
-            return View(producto);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener producto con ID {Id}", id);
+                return View("Error");
+            }
         }
 
         public IActionResult Create()
@@ -81,42 +88,66 @@ namespace VentasAPP.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var producto = await _productoService.ObtenerProductoPorIdAsync(id);
-            if (producto == null)
+            try
             {
-                return NotFound();
+                var producto = await _productoService.ObtenerProductoPorIdAsync(id);
+                if (producto == null) return NotFound();
+                return View(producto);
             }
-            return View(producto);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar edición de producto {Id}", id);
+                return View("Error");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Producto producto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(producto);
+
+            try
             {
                 await _productoService.ActualizarProductoAsync(id, producto);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
-            return View(producto);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar producto {Id}", id);
+                ModelState.AddModelError("", "No se pudo actualizar el producto.");
+                return View(producto);
+            }
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var producto = await _productoService.ObtenerProductoPorIdAsync(id);
-            if (producto == null)
+            try
             {
-                return NotFound();
+                var producto = await _productoService.ObtenerProductoPorIdAsync(id);
+                if (producto == null) return NotFound();
+                return View(producto);
             }
-            return View(producto);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar eliminación de producto {Id}", id);
+                return View("Error");
+            }
         }
 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _productoService.EliminarProductoAsync(id);
-            return RedirectToAction("Index");
+            try
+            {
+                await _productoService.EliminarProductoAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar producto {Id}", id);
+                return View("Error");
+            }
         }
-
         public async Task<IActionResult> ExportToPdf(string nombre, decimal? precioMin, decimal? precioMax)
         {
             var productos = await _productoService.ObtenerTodosLosProductosAsync();

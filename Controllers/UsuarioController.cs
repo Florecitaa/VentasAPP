@@ -86,11 +86,11 @@ namespace VentasAPP.Controllers
             {
                 try
                 {
-                    // Establecer el rol por defecto a "Cliente"
+                    // Aqui se establece que al registrar un nuevo usuario sera un cliente
                     usuario.Rol = "Cliente";
                     await _usuarioService.CrearUsuarioAsync(usuario);
 
-                    // Redirigir a la lista de productos en lugar de a la lista de usuarios
+                    // y nos envia a productos 
                     return RedirectToAction("Index", "Home");
 
                 }

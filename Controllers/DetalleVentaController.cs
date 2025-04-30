@@ -8,6 +8,7 @@ namespace VentasAPP.Controllers
         private readonly DetalleVentaService _detalleVentaService;
         private readonly ILogger<DetalleVentaController> _logger;
 
+        // Constructor que accede a la lógica y el logger para registrar errores
         public DetalleVentaController(DetalleVentaService detalleVentaService, ILogger<DetalleVentaController> logger)
         {
             _detalleVentaService = detalleVentaService;
@@ -15,6 +16,7 @@ namespace VentasAPP.Controllers
         }
 
         // GET: DetalleVenta
+        // Muestra la lista completa de detalles de venta
         public async Task<IActionResult> Index()
         {
             try
@@ -30,6 +32,7 @@ namespace VentasAPP.Controllers
         }
 
         // GET: DetalleVenta/Details/5
+        // Muestra los datos de un detalle de venta específico
         public async Task<IActionResult> Details(int id)
         {
             try

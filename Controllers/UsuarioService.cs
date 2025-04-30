@@ -28,14 +28,7 @@ namespace VentasAPP.Controllers
             return JsonConvert.DeserializeObject<Usuario>(content);
         }
 
-        //public async Task CrearUsuarioAsync(Usuario usuario)
-        //{
-        //    var json = JsonConvert.SerializeObject(usuario);
-        //    var stringContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        //    var response = await _httpClient.PostAsync(_baseUrl + "/Usuario", stringContent);
-        //    response.EnsureSuccessStatusCode();
-
-        //}
+       
 
         public async Task<int> CrearUsuarioAsync(Usuario usuario) 
         {
