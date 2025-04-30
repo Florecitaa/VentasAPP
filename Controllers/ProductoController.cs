@@ -210,5 +210,44 @@ namespace VentasAPP.Controllers
             }
         }
 
+
+        private List<ItemCarrito> ObtenerCarrito()
+        {
+            var carrito = HttpContext.Session.GetString("Carrito");
+            if (carrito != null)
+                return JsonConvert.DeserializeObject<List<ItemCarrito>>(carrito);
+            return new List<ItemCarrito>();
+        }
+
+        private void GuardarCarrito(List<ItemCarrito> carrito)
+        {
+            HttpContext.Session.SetString("Carrito", JsonConvert.SerializeObject(carrito));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarAlCarrito(int id)
+        {
+            var producto = await _productoService.ObtenerProductoPorIdAsync(id);
+            if (producto == null) return NotFound();
+
+            var carrito = ObtenerCarrito();
+            var item = carrito.FirstOrDefault(p => p.ProductoId == id);
+            if (item != null)
+                item.Cantidad++;
+            else
+                carrito.Add(new ItemCarrito { ProductoId = id, Nombre = producto.Nombre, Precio = producto.Precio, Cantidad = 1 });
+
+            GuardarCarrito(carrito);
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult VerCarrito()
+        {
+            var carrito = ObtenerCarrito();
+            ViewBag.Total = carrito.Sum(x => x.Precio * x.Cantidad);
+            return View(carrito);
+        }
+
+
     }
 }

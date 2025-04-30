@@ -82,6 +82,9 @@
                         <a asp-action="Edit" asp-route-id="@item.idproducto">Editar</a>
                         <a asp-action="Delete" asp-route-id="@item.idproducto">Eliminar</a>
                     }
+                    <form asp-action="AgregarAlCarrito" asp-route-id="@item.idproducto" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-info">Agregar al carrito</button>
+                    </form>
                 </td>
             </tr>
         }
@@ -91,4 +94,8 @@
     <a asp-action="ExportToPdf" asp-route-nombre="@ViewBag.Nombre" asp-route-precioMin="@ViewBag.PrecioMin" asp-route-precioMax="@ViewBag.PrecioMax" class="btn btn-danger">Exportar a PDF</a> |
     <a asp-action="ExportToExcel" asp-route-nombre="@ViewBag.Nombre" asp-route-precioMin="@ViewBag.PrecioMin" asp-route-precioMax="@ViewBag.PrecioMax" class="btn btn-success">Exportar a Excel</a>
 
+</div>
+
+<div style="margin-top: 20px;">
+    <a asp-action="VerCarrito" class="btn btn-warning">Ver carrito</a>
 </div>

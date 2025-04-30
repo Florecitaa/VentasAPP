@@ -34,12 +34,20 @@ namespace VentasAPP.Controllers
             var json = JsonConvert.SerializeObject(venta);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(_baseUrl + "/Venta", stringContent);
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al insertar venta: {response.StatusCode} - {errorContent}");
+            }
+
             var content = await response.Content.ReadAsStringAsync();
-           
-            var result = JsonConvert.DeserializeObject<int>(content);
-            return result;
+            // Deserializamos el objeto completo y devolvemos su ID
+            var created = JsonConvert.DeserializeObject<Venta>(content);
+            return created.IDVenta;
         }
+
+
 
         public async Task<bool> ActualizarVentaAsync(int idVenta, Venta venta)
         {
